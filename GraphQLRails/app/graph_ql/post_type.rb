@@ -5,4 +5,6 @@ PostType = GraphQL::ObjectType.define do
 
   field :title, types.String
   field :content, types.String
+
+  connection :comments, -> { CommentType.connection_type }
 end

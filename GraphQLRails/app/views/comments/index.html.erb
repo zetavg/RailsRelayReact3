@@ -1,4 +1,4 @@
-<h1>Listing comments</h1>
+<h2>Comments</h2>
 
 <table>
   <tr>
@@ -20,4 +20,4 @@
 
 <br />
 
-<%= link_to 'New Comment', new_post_comment_path(params[:post_id]) %>
+<%= link_to 'New Comment', new_post_comment_path(post_id: @post.id) %>

@@ -2,11 +2,6 @@ class CommentsController < ApplicationController
   before_action :set_comments
   before_action :set_comment, only: [:show, :edit, :update, :destroy]
 
-  # GET posts/1/comments
-  def index
-    @comments = @post.comments
-  end
-
   # GET posts/1/comments/1
   def show
   end

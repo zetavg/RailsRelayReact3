@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  post :graphql, to: 'graph_ql#query'
+
   resources :posts do
     resources :comments, except: [:index]
   end

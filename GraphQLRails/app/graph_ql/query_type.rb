@@ -12,4 +12,13 @@ QueryType = GraphQL::ObjectType.define do
       RelayNodeIdentification.object_from_id(args[:id], ctx)
     }
   end
+
+  field :comment do
+    type CommentType
+    argument :id, !types.ID
+    resolve -> (_obj, args, ctx) {
+      ctx[:type_name] = :Comment
+      RelayNodeIdentification.object_from_id(args[:id], ctx)
+    }
+  end
 end

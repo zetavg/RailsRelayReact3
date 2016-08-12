@@ -12,6 +12,14 @@ bundle install
 rails server
 ```
 
+### 前端 - React Native
+
+```bash
+cd RelayReact
+npm install
+react-native run-ios # 或 react-native run-android 或 react-native start
+```
+
 ## 更新 GraphQL Schema
 
 如果在開發時更新了 GraphQL Schema，需要跑以下指令，來更新 GraphQL 的 schema dumb：

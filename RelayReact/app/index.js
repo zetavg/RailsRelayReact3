@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import Relay, { DefaultNetworkLayer } from 'react-relay';
+
+Relay.injectNetworkLayer(
+  new DefaultNetworkLayer('http://localhost:3000/graphql')
+);
+
 import {
   Platform,
   StyleSheet,

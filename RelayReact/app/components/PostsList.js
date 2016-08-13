@@ -7,7 +7,8 @@ import Relay from 'react-relay';
 import {
   StyleSheet,
   View,
-  ListView
+  ListView,
+  RefreshControl
 } from 'react-native';
 
 const dataSource = new ListView.DataSource({
@@ -18,7 +19,9 @@ import PostTitle from 'components/PostTitle';
 
 class PostsList extends Component {
   static propTypes = {
-    postConnection: PropTypes.object.isRequired
+    postConnection: PropTypes.object.isRequired,
+    refreshing: PropTypes.bool,
+    onRefresh: PropTypes.func
   }
 
   constructor(props) {
@@ -62,6 +65,15 @@ class PostsList extends Component {
     return (
       <ListView
         {...this.props}
+        refreshControl={
+          this.props.onRefresh ?
+          <RefreshControl
+            refreshing={this.props.refreshing}
+            onRefresh={this.props.onRefresh}
+          />
+          :
+          null
+        }
         style={styles.listView}
         dataSource={this.state.dataSource}
         renderRow={this.renderRow.bind(this)}

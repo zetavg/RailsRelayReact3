@@ -16,11 +16,22 @@ import SitePosts from 'components/SitePosts';
 import SiteRoute from 'routes/SiteRoute';
 
 export default class SitePostsContainer extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      route: new SiteRoute(),
+      refreshing: false,
+      forceFetch: false
+    };
+  }
+
   render() {
     return (
       <Relay.RootContainer
         Component={SitePosts}
-        route={new SiteRoute()}
+        route={this.state.route}
+        forceFetch={this.state.forceFetch}
         renderLoading={() => {
           return (
             <View style={styles.loadingMessage}>
@@ -39,8 +50,34 @@ export default class SitePostsContainer extends Component {
             </View>
           );
         }}
+        renderFetched={(data) => {
+          return (
+            <SitePosts
+              {...data}
+              onRefresh={this.refresh.bind(this)}
+              refreshing={this.state.refreshing}
+            />
+          );
+        }}
+        onReadyStateChange={this.handleReadyStateChange.bind(this)}
       />
     );
+  }
+
+  handleReadyStateChange(readyState) {
+    this.setState({
+      refreshing: readyState.stale
+    });
+  }
+
+  refresh() {
+    this.setState({
+      route: new SiteRoute(),
+      refreshing: true,
+      forceFetch: true
+    }, () => {
+      this.setState({ forceFetch: false });
+    });
   }
 }
 

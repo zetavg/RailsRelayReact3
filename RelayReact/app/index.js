@@ -11,10 +11,13 @@ import {
   View,
   Navigator,
   StatusBar,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from 'react-native';
 
 import WelcomePage from './WelcomePage';
+
+import LatestPostsContainer from 'containers/LatestPostsContainer';
 
 export default class App extends Component {
   render() {
@@ -25,7 +28,7 @@ export default class App extends Component {
           barStyle="light-content"
         />
         <Navigator
-          initialRoute={{ name: 'welcome' }}
+          initialRoute={{ name: 'latestPosts' }}
           navigationBar={
             <Navigator.NavigationBar
               routeMapper={{
@@ -41,6 +44,9 @@ export default class App extends Component {
                   let title;
 
                   switch (route.name) {
+                  case 'latestPosts':
+                    title = 'Latest Posts';
+                    break;
                   default:
                     title = 'Welcome';
                     break;
@@ -58,6 +64,12 @@ export default class App extends Component {
           }
           renderScene={(route, navigator) => {
             switch (route.name) {
+            case 'latestPosts':
+              return (
+                <ScrollView style={styles.content}>
+                  <LatestPostsContainer/>
+                </ScrollView>
+              );
             default:
               return <WelcomePage navigator={navigator} />;
             }
@@ -93,5 +105,9 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 18,
     fontWeight: '500'
+  },
+  content: {
+    paddingTop: 72,
+    backgroundColor: '#F0F4F7'
   }
 });

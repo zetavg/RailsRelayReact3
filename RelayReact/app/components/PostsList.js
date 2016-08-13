@@ -61,6 +61,7 @@ class PostsList extends Component {
   render() {
     return (
       <ListView
+        {...this.props}
         style={styles.listView}
         dataSource={this.state.dataSource}
         renderRow={this.renderRow.bind(this)}

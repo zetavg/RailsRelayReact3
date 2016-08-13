@@ -17,6 +17,8 @@ import {
 
 import WelcomePage from './WelcomePage';
 
+import LatestPostsContainer from 'containers/LatestPostsContainer';
+
 export default class App extends Component {
   render() {
     return (
@@ -26,7 +28,7 @@ export default class App extends Component {
           barStyle="light-content"
         />
         <Navigator
-          initialRoute={{ name: 'welcome' }}
+          initialRoute={{ name: 'latestPosts' }}
           navigationBar={
             <Navigator.NavigationBar
               routeMapper={{
@@ -42,6 +44,9 @@ export default class App extends Component {
                   let title;
 
                   switch (route.name) {
+                  case 'latestPosts':
+                    title = 'Latest Posts';
+                    break;
                   default:
                     title = 'Welcome';
                     break;
@@ -59,6 +64,12 @@ export default class App extends Component {
           }
           renderScene={(route, navigator) => {
             switch (route.name) {
+            case 'latestPosts':
+              return (
+                <View style={styles.content}>
+                  <LatestPostsContainer/>
+                </View>
+              );
             default:
               return (
                 <View style={styles.content}>

@@ -21,4 +21,9 @@ QueryType = GraphQL::ObjectType.define do
       RelayNodeIdentification.object_from_id(args[:id], ctx)
     }
   end
+
+  field :site do
+    type SiteType
+    resolve -> (_obj, _args, _ctx) { Object }
+  end
 end

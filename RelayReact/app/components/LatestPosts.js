@@ -10,6 +10,8 @@ import PostsList from 'components/PostsList';
 class LatestPosts extends Component {
   static propTypes = {
     site: PropTypes.object.isRequired,
+    refreshing: PropTypes.bool,
+    onRefresh: PropTypes.func.isRequired,
     relay: PropTypes.shape({
       variables: PropTypes.object.isRequired,
       setVariables: PropTypes.func.isRequired
@@ -23,6 +25,8 @@ class LatestPosts extends Component {
       <PostsList
         postConnection={site.latestPosts}
         onEndReached={this.loadMorePosts.bind(this)}
+        onRefresh={this.refresh.bind(this)}
+        refreshing={this.props.refreshing}
       />
     );
   }
@@ -35,6 +39,12 @@ class LatestPosts extends Component {
     this.props.relay.setVariables({
       postsCount: postsCount + 10
     });
+  }
+
+  refresh() {
+    this.props.relay.setVariables({
+      postsCount: 10
+    }, this.props.onRefresh);
   }
 }
 

@@ -18,6 +18,7 @@ import {
 import WelcomePage from './WelcomePage';
 
 import SitePostsContainer from 'containers/SitePostsContainer';
+import PostContainer from 'containers/PostContainer';
 
 export default class App extends Component {
   render() {
@@ -47,6 +48,9 @@ export default class App extends Component {
                   case 'latestPosts':
                     title = 'Latest Posts';
                     break;
+                  case 'post':
+                    title = 'Post';
+                    break;
                   default:
                     title = 'Welcome';
                     break;
@@ -71,6 +75,14 @@ export default class App extends Component {
                     onPostPress={(postID) => {
                       navigator.push({ name: 'post', postID });
                     }}
+                  />
+                </View>
+              );
+            case 'post':
+              return (
+                <View style={styles.content}>
+                  <PostContainer
+                    postID={route.postID}
                   />
                 </View>
               );

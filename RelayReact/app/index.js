@@ -21,7 +21,7 @@ import NavigationBarTitle from 'components/NavigationBarTitle';
 import NavigationBarPostTitleContainer from 'containers/NavigationBarPostTitleContainer';
 
 import SitePostsContainer from 'containers/SitePostsContainer';
-import PostContainer from 'containers/PostContainer';
+import PostWithCommentsContainer from 'containers/PostWithCommentsContainer';
 
 export default class App extends Component {
   render() {
@@ -85,7 +85,7 @@ export default class App extends Component {
             case 'post':
               return (
                 <View style={styles.content}>
-                  <PostContainer
+                  <PostWithCommentsContainer
                     postID={route.postID}
                   />
                 </View>

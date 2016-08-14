@@ -8,6 +8,8 @@ import {
   StyleSheet,
   ListView,
   View,
+  Text,
+  TouchableOpacity,
   RefreshControl
 } from 'react-native';
 
@@ -21,6 +23,7 @@ const dataSource = new ListView.DataSource({
 const getDataSourceFromProps = (props) => {
   return dataSource.cloneWithRows([
     props.post,
+    null,
     null,
     ...props.post.comments.edges
   ]);
@@ -40,7 +43,8 @@ class PostWithComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: getDataSourceFromProps(props)
+      dataSource: getDataSourceFromProps(props),
+      commentsOrder: 'oldest'
     };
   }
 
@@ -59,6 +63,27 @@ class PostWithComments extends Component {
 
     } else if (rowID === '1') { // blank area
       return <View style={styles.blankArea} />;
+
+    } else if (rowID === '2') { // comments title
+      let { commentsOrder } = this.state;
+      return (
+        <View style={styles.commentsTitle}>
+          <Text style={styles.commentsTitleText}>Comments</Text>
+          <TouchableOpacity
+            style={styles.commentsOrder}
+            onPress={this.changeCommentsOrder.bind(this)}
+          >
+            <Text style={styles.commentsOrderText}>
+              {commentsOrder}
+            </Text>
+            <View
+              style={commentsOrder === 'newest' && { transform: [{ rotate: '180deg' }] }}
+            >
+              <Text style={styles.commentsOrderIconText}>▾</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      );
 
     } else { // comment
       return <Comment comment={rowData.node} />;
@@ -129,6 +154,24 @@ class PostWithComments extends Component {
     });
   }
 
+  changeCommentsOrder() {
+    let { commentsOrder } = this.state;
+
+    if (commentsOrder === 'newest') {
+      this.setState({ commentsOrder: 'oldest' });
+      this.props.relay.setVariables({
+        commentsCount: 10,
+        commentsOrder: 'oldest'
+      });
+    } else {
+      this.setState({ commentsOrder: 'newest' });
+      this.props.relay.setVariables({
+        commentsCount: 10,
+        commentsOrder: 'newest'
+      });
+    }
+  }
+
   handleRefresh() {
     this.props.relay.setVariables({
       commentsCount: 10
@@ -139,13 +182,17 @@ class PostWithComments extends Component {
 
 export default Relay.createContainer(PostWithComments, {
   initialVariables: {
-    commentsCount: 10
+    commentsCount: 10,
+    commentsOrder: 'oldest'
   },
   fragments: {
     post: () => Relay.QL`
       fragment on Post {
         ${Post.getFragment('post')},
-        comments(first: $commentsCount) {
+        comments(
+          order: $commentsOrder,
+          first: $commentsCount
+        ) {
           pageInfo {
             hasNextPage
           }
@@ -174,5 +221,33 @@ const styles = StyleSheet.create({
   heavySeparator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#313B4716'
+  },
+  commentsTitle: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  commentsTitleText: {
+    flex: 100,
+    fontSize: 15,
+    color: '#888'
+  },
+  commentsOrder: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  commentsOrderText: {
+    marginRight: 4,
+    fontSize: 12,
+    fontWeight: '200',
+    color: '#888'
+  },
+  commentsOrderIconText: {
+    paddingBottom: 3,
+    fontSize: 12,
+    fontWeight: '200',
+    color: '#888'
   }
 });

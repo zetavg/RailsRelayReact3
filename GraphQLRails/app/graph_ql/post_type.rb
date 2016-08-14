@@ -6,5 +6,15 @@ PostType = GraphQL::ObjectType.define do
   field :title, types.String
   field :content, types.String
 
-  connection :comments, -> { CommentType.connection_type }
+  connection :comments do
+    type -> { CommentType.connection_type }
+    argument :order, types.String
+    resolve -> (obj, args, _ctx) {
+      if args[:order] == 'newest'
+        obj.comments.order(created_at: :desc)
+      else
+        obj.comments.order(created_at: :asc)
+      end
+    }
+  end
 end

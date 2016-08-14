@@ -2,7 +2,7 @@
  * @providesModule containers/SitePostsContainer
  */
 
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import Relay from 'react-relay';
 import {
   StyleSheet,
@@ -16,6 +16,10 @@ import SitePosts from 'components/SitePosts';
 import SiteRoute from 'routes/SiteRoute';
 
 export default class SitePostsContainer extends Component {
+  static propTypes = {
+    onPostPress: PropTypes.func
+  }
+
   constructor(props) {
     super(props);
 
@@ -27,6 +31,8 @@ export default class SitePostsContainer extends Component {
   }
 
   render() {
+    let { onPostPress } = this.props;
+
     return (
       <Relay.RootContainer
         Component={SitePosts}
@@ -56,6 +62,7 @@ export default class SitePostsContainer extends Component {
               {...data}
               onRefresh={this.refresh.bind(this)}
               refreshing={this.state.refreshing}
+              onPostPress={onPostPress}
             />
           );
         }}

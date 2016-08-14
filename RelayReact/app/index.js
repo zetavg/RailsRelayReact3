@@ -67,7 +67,11 @@ export default class App extends Component {
             case 'latestPosts':
               return (
                 <View style={styles.content}>
-                  <LatestPostsContainer/>
+                  <LatestPostsContainer
+                    onPostPress={(postID) => {
+                      navigator.push({ name: 'post', postID });
+                    }}
+                  />
                 </View>
               );
             default:

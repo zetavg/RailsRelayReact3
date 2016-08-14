@@ -15,11 +15,12 @@ class LatestPosts extends Component {
     relay: PropTypes.shape({
       variables: PropTypes.object.isRequired,
       setVariables: PropTypes.func.isRequired
-    }).isRequired
+    }).isRequired,
+    onPostPress: PropTypes.func
   }
 
   render() {
-    let { site } = this.props;
+    let { site, onPostPress } = this.props;
 
     return (
       <PostsList
@@ -27,6 +28,7 @@ class LatestPosts extends Component {
         onEndReached={this.loadMorePosts.bind(this)}
         onRefresh={this.refresh.bind(this)}
         refreshing={this.props.refreshing}
+        onPostPress={onPostPress}
       />
     );
   }

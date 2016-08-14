@@ -6,43 +6,27 @@ import React, { PropTypes, Component } from 'react';
 import Relay from 'react-relay';
 import {
   StyleSheet,
-  ScrollView,
   View,
-  Text,
-  RefreshControl
+  Text
 } from 'react-native';
 
 import PostTitle from 'components/PostTitle';
 
 class Post extends Component {
   static propTypes = {
-    post: PropTypes.object.isRequired,
-    refreshing: PropTypes.bool,
-    onRefresh: PropTypes.func
+    post: PropTypes.object.isRequired
   }
 
   render() {
     let { post } = this.props;
 
     return (
-      <ScrollView
-        refreshControl={
-          this.props.onRefresh ?
-          <RefreshControl
-            refreshing={this.props.refreshing}
-            onRefresh={this.props.onRefresh}
-          />
-          :
-          null
-        }
-      >
-        <View style={styles.container}>
-          <PostTitle post={post} />
-          <View style={styles.postContent}>
-            <Text style={styles.postContentText}>{post.content}</Text>
-          </View>
+      <View style={styles.container}>
+        <PostTitle post={post} />
+        <View style={styles.postContent}>
+          <Text style={styles.postContentText}>{post.content}</Text>
         </View>
-      </ScrollView>
+      </View>
     );
   }
 }

@@ -4,16 +4,10 @@
 
 import React, { PropTypes, Component } from 'react';
 import Relay from 'react-relay';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator
-} from 'react-native';
 
 import LatestPosts from 'components/LatestPosts';
 import SiteRoute from 'routes/SiteRoute';
+import ContentLoading from 'components/ContentLoading';
 
 export default class LatestPostsContainer extends Component {
   static propTypes = {
@@ -40,20 +34,15 @@ export default class LatestPostsContainer extends Component {
         forceFetch={this.state.forceFetch}
         renderLoading={() => {
           return (
-            <View style={styles.loadingMessage}>
-              <ActivityIndicator/>
-              <Text style={styles.loadingMessageText}>Loading...</Text>
-            </View>
+            <ContentLoading/>
           );
         }}
         renderFailure={(error, retry) => {
           return (
-            <View style={styles.loadingMessage}>
-              <Text style={styles.loadingMessageText}>{error.message}</Text>
-              <TouchableOpacity onPress={retry}>
-                <Text style={styles.retryText}>Retry</Text>
-              </TouchableOpacity>
-            </View>
+            <ContentLoading
+              error={error}
+              onRetryPress={retry}
+            />
           );
         }}
         renderFetched={(data) => {
@@ -87,17 +76,3 @@ export default class LatestPostsContainer extends Component {
     });
   }
 }
-
-const styles = StyleSheet.create({
-  loadingMessage: {
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  loadingMessageText: {
-    marginVertical: 16
-  },
-  retryText: {
-    textDecorationLine: 'underline'
-  }
-});

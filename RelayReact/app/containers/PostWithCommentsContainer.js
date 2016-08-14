@@ -1,15 +1,15 @@
 /**
- * @providesModule containers/PostContainer
+ * @providesModule containers/PostWithCommentsContainer
  */
 
 import React, { PropTypes, Component } from 'react';
 import Relay from 'react-relay';
 
-import Post from 'components/Post';
+import PostWithComments from 'components/PostWithComments';
 import PostRoute from 'routes/PostRoute';
 import ContentLoading from 'components/ContentLoading';
 
-export default class PostContainer extends Component {
+export default class PostWithCommentsContainer extends Component {
   static propTypes = {
     postID: PropTypes.string.isRequired
   }
@@ -38,7 +38,7 @@ export default class PostContainer extends Component {
   render() {
     return (
       <Relay.RootContainer
-        Component={Post}
+        Component={PostWithComments}
         route={this.state.route}
         forceFetch={this.state.forceFetch}
         renderLoading={() => {
@@ -56,7 +56,7 @@ export default class PostContainer extends Component {
         }}
         renderFetched={(data) => {
           return (
-            <Post
+            <PostWithComments
               {...data}
               onRefresh={this.refresh.bind(this)}
               refreshing={this.state.refreshing}

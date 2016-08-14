@@ -30,7 +30,11 @@ class PostWithComments extends Component {
   static propTypes = {
     post: PropTypes.object.isRequired,
     refreshing: PropTypes.bool,
-    onRefresh: PropTypes.func
+    onRefresh: PropTypes.func,
+    relay: PropTypes.shape({
+      variables: PropTypes.object.isRequired,
+      setVariables: PropTypes.func.isRequired
+    }).isRequired
   }
 
   constructor(props) {
@@ -101,7 +105,7 @@ class PostWithComments extends Component {
           this.props.onRefresh ?
           <RefreshControl
             refreshing={this.props.refreshing}
-            onRefresh={this.props.onRefresh}
+            onRefresh={this.handleRefresh.bind(this)}
           />
           :
           null
@@ -110,20 +114,41 @@ class PostWithComments extends Component {
         renderRow={this.renderRow.bind(this)}
         renderSeparator={this.renderSeparator.bind(this)}
         renderFooter={this.renderSeparator.bind(this, 'footer')}
+        onEndReached={this.loadMoreComments.bind(this)}
       />
     );
+  }
+
+  loadMoreComments() {
+    let { pageInfo } = this.props.post.comments;
+    if (!pageInfo.hasNextPage) return;
+
+    let { commentsCount } = this.props.relay.variables;
+    this.props.relay.setVariables({
+      commentsCount: commentsCount + 10
+    });
+  }
+
+  handleRefresh() {
+    this.props.relay.setVariables({
+      commentsCount: 10
+    });
+    this.props.onRefresh && this.props.onRefresh();
   }
 }
 
 export default Relay.createContainer(PostWithComments, {
   initialVariables: {
-    commentsCount: 5
+    commentsCount: 10
   },
   fragments: {
     post: () => Relay.QL`
       fragment on Post {
         ${Post.getFragment('post')},
-        comments(first: 10) {
+        comments(first: $commentsCount) {
+          pageInfo {
+            hasNextPage
+          }
           edges {
             node {
               ${Comment.getFragment('comment')}

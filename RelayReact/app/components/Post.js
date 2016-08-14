@@ -8,21 +8,34 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Text
+  Text,
+  RefreshControl
 } from 'react-native';
 
 import PostTitle from 'components/PostTitle';
 
 class Post extends Component {
   static propTypes = {
-    post: PropTypes.object.isRequired
+    post: PropTypes.object.isRequired,
+    refreshing: PropTypes.bool,
+    onRefresh: PropTypes.func
   }
 
   render() {
     let { post } = this.props;
 
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          this.props.onRefresh ?
+          <RefreshControl
+            refreshing={this.props.refreshing}
+            onRefresh={this.props.onRefresh}
+          />
+          :
+          null
+        }
+      >
         <View style={styles.container}>
           <PostTitle post={post} />
           <View style={styles.postContent}>

@@ -8,6 +8,8 @@ import {
   StyleSheet,
   ListView,
   View,
+  Text,
+  TouchableOpacity,
   RefreshControl
 } from 'react-native';
 
@@ -22,6 +24,7 @@ const getDataSource = (props) => {
   return dataSource.cloneWithRows([
     { type: 'post', data: props.post, dataID: props.post.__dataID__ },
     { type: 'blankArea', dataID: 'blankArea' },
+    { type: 'commentsTitle', dataID: 'commentsTitle' },
     ...props.post.comments.edges.map(edge => {
       return { type: 'commentEdge', data: edge, dataID: edge.__dataID__ };
     })
@@ -42,7 +45,8 @@ class PostWithComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: getDataSource(props)
+      dataSource: getDataSource(props),
+      commentsOrder: 'oldest'
     };
   }
 
@@ -61,6 +65,26 @@ class PostWithComments extends Component {
       return <Post post={rowData.data} />;
     case 'blankArea':
       return <View style={styles.blankArea} />;
+    case 'commentsTitle':
+      let { commentsOrder } = this.state;
+      return (
+        <View style={styles.commentsTitle}>
+          <Text style={styles.commentsTitleText}>Comments</Text>
+          <TouchableOpacity
+            style={styles.commentsOrder}
+            onPress={this.changeCommentsOrder.bind(this)}
+          >
+            <Text style={styles.commentsOrderText}>
+              {commentsOrder}
+            </Text>
+            <View
+              style={commentsOrder === 'newest' && { transform: [{ rotate: '180deg' }] }}
+            >
+              <Text style={styles.commentsOrderIconText}>▾</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      );
     case 'commentEdge':
       return <Comment comment={rowData.data.node} />;
     }
@@ -130,6 +154,24 @@ class PostWithComments extends Component {
     });
   }
 
+  changeCommentsOrder() {
+    let { commentsOrder } = this.state;
+
+    if (commentsOrder === 'newest') {
+      this.setState({ commentsOrder: 'oldest' });
+      this.props.relay.setVariables({
+        commentsCount: 10,
+        commentsOrder: 'oldest'
+      });
+    } else {
+      this.setState({ commentsOrder: 'newest' });
+      this.props.relay.setVariables({
+        commentsCount: 10,
+        commentsOrder: 'newest'
+      });
+    }
+  }
+
   handleRefresh() {
     this.props.relay.setVariables({
       commentsCount: 10
@@ -140,13 +182,17 @@ class PostWithComments extends Component {
 
 export default Relay.createContainer(PostWithComments, {
   initialVariables: {
-    commentsCount: 10
+    commentsCount: 10,
+    commentsOrder: 'oldest'
   },
   fragments: {
     post: () => Relay.QL`
       fragment on Post {
         ${Post.getFragment('post')},
-        comments(first: $commentsCount) {
+        comments(
+          order: $commentsOrder,
+          first: $commentsCount
+        ) {
           pageInfo {
             hasNextPage
           }
@@ -175,5 +221,33 @@ const styles = StyleSheet.create({
   heavySeparator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#313B4716'
+  },
+  commentsTitle: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  commentsTitleText: {
+    flex: 100,
+    fontSize: 15,
+    color: '#888'
+  },
+  commentsOrder: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  commentsOrderText: {
+    marginRight: 4,
+    fontSize: 12,
+    fontWeight: '200',
+    color: '#888'
+  },
+  commentsOrderIconText: {
+    paddingBottom: 3,
+    fontSize: 12,
+    fontWeight: '200',
+    color: '#888'
   }
 });

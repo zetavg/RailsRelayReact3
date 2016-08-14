@@ -14,13 +14,33 @@ export default class PostContainer extends Component {
     postID: PropTypes.string.isRequired
   }
 
-  render() {
-    let { postID } = this.props;
+  constructor(props) {
+    super(props);
 
+    let { postID } = props;
+
+    this.state = {
+      route: new PostRoute({ postID }),
+      refreshing: false,
+      forceFetch: false
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.postID !== nextProps.postID) {
+      let { postID } = nextProps;
+      this.setState({
+        route: new PostRoute({ postID })
+      });
+    }
+  }
+
+  render() {
     return (
       <Relay.RootContainer
         Component={Post}
-        route={new PostRoute({ postID })}
+        route={this.state.route}
+        forceFetch={this.state.forceFetch}
         renderLoading={() => {
           return (
             <ContentLoading/>
@@ -34,7 +54,35 @@ export default class PostContainer extends Component {
             />
           );
         }}
+        renderFetched={(data) => {
+          return (
+            <Post
+              {...data}
+              onRefresh={this.refresh.bind(this)}
+              refreshing={this.state.refreshing}
+            />
+          );
+        }}
+        onReadyStateChange={this.handleReadyStateChange.bind(this)}
       />
     );
+  }
+
+  handleReadyStateChange(readyState) {
+    this.setState({
+      refreshing: readyState.stale
+    });
+  }
+
+  refresh() {
+    let { postID } = this.props;
+
+    this.setState({
+      route: new PostRoute({ postID }),
+      refreshing: true,
+      forceFetch: true
+    }, () => {
+      this.setState({ forceFetch: false });
+    });
   }
 }

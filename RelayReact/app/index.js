@@ -17,6 +17,9 @@ import {
 
 import WelcomePage from './WelcomePage';
 
+import NavigationBarTitle from 'components/NavigationBarTitle';
+import NavigationBarPostTitleContainer from 'containers/NavigationBarPostTitleContainer';
+
 import LatestPostsContainer from 'containers/LatestPostsContainer';
 import PostContainer from 'containers/PostContainer';
 
@@ -42,25 +45,26 @@ export default class App extends Component {
                 },
                 RightButton: (route, navigator, index, navState) => {},
                 Title: (route, navigator, index, navState) => {
-                  let title;
-
                   switch (route.name) {
                   case 'latestPosts':
-                    title = 'Latest Posts';
-                    break;
+                    return (
+                      <NavigationBarTitle>
+                        Latest Posts
+                      </NavigationBarTitle>
+                    );
                   case 'post':
-                    title = 'Post';
-                    break;
+                    return (
+                      <NavigationBarPostTitleContainer
+                        postID={route.postID}
+                      />
+                    );
                   default:
-                    title = 'Welcome';
-                    break;
+                    return (
+                      <NavigationBarTitle>
+                        Welcome
+                      </NavigationBarTitle>
+                    );
                   }
-
-                  return (
-                    <View style={styles.navigationBarTitle}>
-                      <Text style={styles.navigationBarTitleText}>{title}</Text>
-                    </View>
-                  );
                 }
               }}
               style={styles.navigationBar}
@@ -118,15 +122,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     lineHeight: 32,
     fontWeight: '200'
-  },
-  navigationBarTitle: {
-    flex: 1,
-    justifyContent: 'center'
-  },
-  navigationBarTitleText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '500'
   },
   content: {
     flex: 1,

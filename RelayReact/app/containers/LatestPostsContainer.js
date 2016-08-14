@@ -2,7 +2,7 @@
  * @providesModule containers/LatestPostsContainer
  */
 
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import Relay from 'react-relay';
 import {
   StyleSheet,
@@ -16,6 +16,10 @@ import LatestPosts from 'components/LatestPosts';
 import SiteRoute from 'routes/SiteRoute';
 
 export default class LatestPostsContainer extends Component {
+  static propTypes = {
+    onPostPress: PropTypes.func
+  }
+
   constructor(props) {
     super(props);
 
@@ -27,6 +31,8 @@ export default class LatestPostsContainer extends Component {
   }
 
   render() {
+    let { onPostPress } = this.props;
+
     return (
       <Relay.RootContainer
         Component={LatestPosts}
@@ -56,6 +62,7 @@ export default class LatestPostsContainer extends Component {
               {...data}
               onRefresh={this.refresh.bind(this)}
               refreshing={this.state.refreshing}
+              onPostPress={onPostPress}
             />
           );
         }}

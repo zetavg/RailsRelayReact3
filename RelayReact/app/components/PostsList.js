@@ -21,7 +21,8 @@ class PostsList extends Component {
   static propTypes = {
     postConnection: PropTypes.object.isRequired,
     refreshing: PropTypes.bool,
-    onRefresh: PropTypes.func
+    onRefresh: PropTypes.func,
+    onPostPress: PropTypes.func
   }
 
   constructor(props) {
@@ -44,10 +45,13 @@ class PostsList extends Component {
     let edge = rowData;
     let { node } = edge;
 
+    let { onPostPress } = this.props;
+
     return (
       <PostTitle
         key={node.id}
         post={node}
+        onPress={onPostPress && (() => onPostPress(node.id))}
       />
     );
   }

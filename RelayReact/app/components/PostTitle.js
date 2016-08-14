@@ -7,20 +7,26 @@ import Relay from 'react-relay';
 import {
   StyleSheet,
   View,
-  Text
+  Text,
+  TouchableOpacity
 } from 'react-native';
 
 class PostTitle extends Component {
   static propTypes = {
-    post: PropTypes.object.isRequired
+    post: PropTypes.object.isRequired,
+    onPress: PropTypes.func
   }
 
   render() {
-    let { post } = this.props;
+    let { post, onPress } = this.props;
+
+    let PressAreaComponent = onPress ? TouchableOpacity : View;
 
     return (
       <View style={styles.titleWrapper}>
-        <Text style={styles.titleText}>{post.title}</Text>
+        <PressAreaComponent onPress={onPress}>
+          <Text style={styles.titleText}>{post.title}</Text>
+        </PressAreaComponent>
       </View>
     );
   }

@@ -15,20 +15,34 @@ import {
 
 import Post from 'components/Post';
 import Comment from 'components/Comment';
+import NewCommentBox from 'components/NewCommentBox';
 
 const dataSource = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1.dataID !== r2.dataID
 });
 
-const getDataSource = (props) => {
-  return dataSource.cloneWithRows([
-    { type: 'post', data: props.post, dataID: props.post.__dataID__ },
-    { type: 'blankArea', dataID: 'blankArea' },
-    { type: 'commentsTitle', dataID: 'commentsTitle' },
-    ...props.post.comments.edges.map(edge => {
-      return { type: 'commentEdge', data: edge, dataID: edge.__dataID__ };
-    })
-  ]);
+const getDataSource = (props, state) => {
+  if (state.commentsOrder === 'newest') {
+    return dataSource.cloneWithRows([
+      { type: 'post', data: props.post, dataID: props.post.__dataID__ },
+      { type: 'blankArea', dataID: 'blankArea' },
+      { type: 'commentsTitle', dataID: 'commentsTitle' },
+      { type: 'newCommentBox', dataID: 'newCommentBox' },
+      ...props.post.comments.edges.map(edge => {
+        return { type: 'commentEdge', data: edge, dataID: edge.__dataID__ };
+      })
+    ]);
+  } else {
+    return dataSource.cloneWithRows([
+      { type: 'post', data: props.post, dataID: props.post.__dataID__ },
+      { type: 'blankArea', dataID: 'blankArea' },
+      { type: 'commentsTitle', dataID: 'commentsTitle' },
+      ...props.post.comments.edges.map(edge => {
+        return { type: 'commentEdge', data: edge, dataID: edge.__dataID__ };
+      }),
+      { type: 'newCommentBox', dataID: 'newCommentBox' },
+    ]);
+  }
 };
 
 class PostWithComments extends Component {
@@ -45,7 +59,7 @@ class PostWithComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: getDataSource(props),
+      dataSource: getDataSource(props, { commentsOrder: 'oldest' }),
       commentsOrder: 'oldest'
     };
   }
@@ -54,7 +68,7 @@ class PostWithComments extends Component {
     if (this.props.post !== nextProps.post ||
         this.props.post.comments.edges !== nextProps.post.comments.edges) {
       this.setState({
-        dataSource: getDataSource(nextProps)
+        dataSource: getDataSource(nextProps, this.state)
       });
     }
   }
@@ -87,6 +101,8 @@ class PostWithComments extends Component {
       );
     case 'commentEdge':
       return <Comment comment={rowData.data.node} />;
+    case 'newCommentBox':
+      return <NewCommentBox post={this.props.post} />;
     }
   }
 
@@ -109,7 +125,7 @@ class PostWithComments extends Component {
       return (
         <View
           key={`sep-${sectionID}-${rowID}`}
-          style={[styles.heavySeparator, styles.blankArea]}
+          style={[styles.heavySeparator, styles.blankArea, styles.keyboardSpace]}
         />
       );
 
@@ -140,6 +156,7 @@ class PostWithComments extends Component {
         renderSeparator={this.renderSeparator.bind(this)}
         renderFooter={this.renderSeparator.bind(this, 'footer')}
         onEndReached={this.loadMoreComments.bind(this)}
+        keyboardDismissMode="interactive"
       />
     );
   }
@@ -189,6 +206,7 @@ export default Relay.createContainer(PostWithComments, {
     post: () => Relay.QL`
       fragment on Post {
         ${Post.getFragment('post')},
+        ${NewCommentBox.getFragment('post')},
         comments(
           order: $commentsOrder,
           first: $commentsCount
@@ -249,5 +267,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '200',
     color: '#888'
+  },
+  keyboardSpace: {
+    marginBottom: 272
   }
 });

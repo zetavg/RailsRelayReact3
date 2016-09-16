@@ -22,6 +22,7 @@ import NavigationBarPostTitleContainer from 'containers/NavigationBarPostTitleCo
 
 import SitePostsContainer from 'containers/SitePostsContainer';
 import PostWithCommentsContainer from 'containers/PostWithCommentsContainer';
+import NewPostContainer from 'containers/NewPostContainer';
 
 export default class App extends Component {
   render() {
@@ -58,6 +59,12 @@ export default class App extends Component {
                         postID={route.postID}
                       />
                     );
+                  case 'newPost':
+                    return (
+                      <NavigationBarTitle>
+                        New Post
+                      </NavigationBarTitle>
+                    );
                   default:
                     return (
                       <NavigationBarTitle>
@@ -80,6 +87,16 @@ export default class App extends Component {
                       navigator.push({ name: 'post', postID });
                     }}
                   />
+                  <TouchableOpacity
+                    style={styles.newPostBtn}
+                    onPress={() => {
+                      navigator.push({ name: 'newPost' });
+                    }}
+                  >
+                    <Text style={styles.newPostBtnText}>
+                      +
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               );
             case 'post':
@@ -87,6 +104,16 @@ export default class App extends Component {
                 <View style={styles.content}>
                   <PostWithCommentsContainer
                     postID={route.postID}
+                  />
+                </View>
+              );
+            case 'newPost':
+              return (
+                <View style={styles.content}>
+                  <NewPostContainer
+                    onCreateSuccess={(post) => {
+                      navigator.pop();
+                    }}
                   />
                 </View>
               );
@@ -134,5 +161,21 @@ const styles = StyleSheet.create({
       }
     }),
     backgroundColor: '#F0F4F7'
+  },
+  newPostBtn: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+    borderRadius: 9999,
+    height: 45,
+    width: 45,
+    backgroundColor: '#FD6E4D',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  newPostBtnText: {
+    fontSize: 24,
+    lineHeight: 24,
+    color: '#FFF'
   }
 });

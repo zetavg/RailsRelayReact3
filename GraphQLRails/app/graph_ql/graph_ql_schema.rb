@@ -4,3 +4,4 @@ GraphQLSchema = GraphQL::Schema.new(
 )
 
 GraphQLSchema.node_identification = RelayNodeIdentification
+GraphQL::Relay::BaseConnection.register_connection_implementation(ActiveRecord::Relation, RelationConnection)
